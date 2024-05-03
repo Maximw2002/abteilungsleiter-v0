@@ -1,0 +1,104 @@
+# Copyright (C) 2021 - present  Juergen Zimmermann, Hochschule Karlsruhe
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Description in Markdown-Syntax
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+"Suche nach Abteilungsleiterdaten"
+type Query {
+  "Suche Abteilungsleiterdaten anhand der ID"
+  abteilungsleiter(id: ID!): Abteilungsleiter
+
+  "Suche Kundendaten anhand des Nachnamens"
+  mehrereAbteilungsleiter(input: Suchkriterien): [Abteilungsleiter!]
+}
+
+type Mutation {
+  "Einen neuen Abteilungsleiter anlegen"
+  create(input: AbteilungsleiterInput!): CreatePayload
+}
+
+# https://spec.graphql.org/draft/#sec-Types
+# https://www.graphql-scalars.dev/docs/scalars/email-address
+# https://www.graphql-scalars.dev/docs/scalars/local-date
+"Eigenschaften eines Abteilungsleiter-Datensatzes mit untergeordneten Eigenschaften"
+type Abteilungsleiter {
+  id: ID
+  "Nachname des Abteilungsleiters"
+  nachname: String!
+  abteilung: Abteilung!
+  mehrereMitarbeiter(first: Int!): [Mitarbeiter!]
+}
+
+type Abteilung {
+  id: ID
+  "Name der Abteilung"
+  abteilungsname: String!
+  "Ortsangabe"
+  standort: String!
+}
+
+# https://www.graphql-scalars.dev/docs/scalars/currency
+"Daten zu einem Mitarbeiter"
+type Mitarbeiter {
+  id: ID
+  "Der Nachname"
+  nachname: String!
+  "Die Arbeitsstunden"
+  arbeitsstunden: Int!
+}
+
+# https://spec.graphql.org/draft/#sec-Input-Objects
+"Suchkriterien für die Query 'abteilungsleiter'"
+input Suchkriterien {
+  "Nachname der gesuchten Abteilungsleiter"
+  nachname: String
+}
+
+"Eingabedaten für einen neuen Abteilungsleiter"
+input AbteilungsleiterInput {
+  "Nachname des neuen Abteilungsleiters"
+  nachname: String!
+  "Abteilung des neuen Abteilungsleiters"
+  abteilung: AbteilungInput!
+  "Mitarbeiter zum neuen Abteilungsleiter"
+  mitarbeiter: [MitarbeiterInput!]
+}
+
+"Neue oder geänderte Abteilung"
+input AbteilungInput {
+  id: String!
+  abteilungsname: String!
+  standort: String!
+}
+
+"Mitarbeitereingabe für einen Abteilungsleiter: Neuanlegen oder Ändern"
+input MitarbeiterInput {
+  id: String!
+  "nachname"
+  nachname: String!
+  "arbeitsstunden"
+  arbeitsstunden: Int!
+}
+
+"Rückgabetyp beim Neuanlegen eines Abteilungsleiters"
+type CreatePayload {
+  "ID des neu angelegten Abteilungsleiters"
+  id: String!
+}
